@@ -18,7 +18,7 @@
 ; version information followed by the transfer information.
 ;
 
-{ version, transfers }
+{ version , transfers }
 
 
 
@@ -35,7 +35,7 @@ version "version" {
   "stats_version"    : "3.0" ,     
 
   ; Who produced the file: either one of the RIRs or the NRO
-  "producer"         ( rir | :"NRO" ) ,
+  "producer"         : ( rir | :"NRO" ) ,
 
   ; UTC offset of the producer.
   "UTC_offset"       : -12..12 ,
@@ -53,9 +53,10 @@ version "version" {
   ; prose (in some contexts, these might be called paragraphs).
   ; This is where a producer would put copyright notices, terms of
   ; service for the data, and production notes.
-  ? "remarks"        [ * string ]
+  ? "remarks"        [ * :string ]
 
 }
+
 
 
 
@@ -68,18 +69,18 @@ transfers "transfers" [ * transfer ]
 transfer {
 
   ? "asns" {
-    "original_set" : asn_set ,
-    "transfer_set" : asn_set
+    "original_set" asn_set ,
+    "transfer_set" asn_set
   } ,
 
   ? "ip4nets" {
-    "original_set" : ip4_set ,
-    "transfer_set  : ip4_set
+    "original_set" ip4_set ,
+    "transfer_set" ip4_set
   } ,
 
   ? "ip6nets" {
-    "original_set" : ip6_set ,
-    "transfer_set" : ip6_set
+    "original_set" ip6_set ,
+    "transfer_set" ip6_set
   } ,
 
   "source_organization"    organization ,
@@ -147,7 +148,7 @@ asn_set [
       "start"               : 0..4294967296 ,
 
       ; The last autonomous system number in the contiguous block.
-      "last"                : 0..4294967296 
+      "end"                 : 0..4294967296 
   }
 
 ]
@@ -187,7 +188,7 @@ ip4_set [
 ; addresses.
 ;
 
-ipv6_set [
+ip6_set [
 
   * {
       ; Start IP address

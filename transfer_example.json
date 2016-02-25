@@ -1,0 +1,36 @@
+{
+  "version" : 
+  {
+    "stats_version" : "3.0" ,
+    "producer" : "ARIN",
+    "UTC_offest" : -5 ,
+    "production_date" : "2016-02-23T02:00:00-05:00" ,
+    "records_interval" : {
+      "start_date" : "2016-02-22T00:00:00-05:00" ,
+      "end_date" : "2016-02-22T11:59:00-05:00"
+    } ,
+    "remarks" :
+    [
+      "Copyright (c) 2016 American Registry for Internet Numbers.",
+      "ARIN Terms of Service for this transfers log can be found at https://www.arin.net/tos"
+    ]
+  } ,
+  "transfers" :
+  [
+    {
+      "asns" :
+      {
+        "original_set" :
+        [
+          { "start" : 1, "end": 22 } ,
+          { "start" : 35, "end" : 100 }
+        ],
+        "transfer_set" :
+        [
+          { "start" : 1, "end": 22 } ,
+          { "start" : 35, "end" : 100 }
+        ]
+      }
+    }
+  ]
+}
