@@ -1,0 +1,238 @@
+;
+; RIR Transfer Log
+;
+; This is a ruleset for describing the transfers of Autonomous System
+; Numbers and IP address networks transacted through Regional Internet
+; Registries (RIRs). The types of transfes covered include both intra-RIR
+; and inter-RIR transfers.
+;
+; This ruleset conforms to JSON Content Rules, defined here:
+; https://tools.ietf.org/html/draft-newton-json-content-rules-05
+;
+
+# jcr-version 0.5
+# ruleset-id rirstats
+
+;
+; The root of this JSON is a JSON object containing
+; version information followed by the transfer information.
+;
+
+{ version, transfers }
+
+
+
+;
+; Describes the version of the file.
+; This object is a member of the top level object.
+;
+
+version "version" {
+
+  ; Denotes version 3.0
+  ; We start at version 3.0 because there do exist two independent
+  ; and incompatible transfer log formats.
+  "stats_version"    : "3.0" ,     
+
+  ; Who produced the file: either one of the RIRs or the NRO
+  "producer"         ( rir | :"NRO" ) ,
+
+  ; UTC offset of the producer.
+  "UTC_offset"       : -12..12 ,
+
+  ; Date and time the file was produced
+  "production_date"  : date-time ,
+
+  ; The period from which the records of this file are covered.
+  "records_interval" { 
+    "start_date" : date-time , 
+    "end_date"   : date-time 
+  } ,
+
+  ; An array of strings, where each string contains a semantic distinct
+  ; prose (in some contexts, these might be called paragraphs).
+  ; This is where a producer would put copyright notices, terms of
+  ; service for the data, and production notes.
+  ? "remarks"        [ * string ]
+
+}
+
+
+
+;
+; Transfers is an array of tranfer objects.
+;
+
+transfers "transfers" [ * transfer ]
+
+transfer {
+
+  ? "asns" {
+    "original_set" : asn_set ,
+    "transfer_set" : asn_set
+  } ,
+
+  ? "ip4nets" {
+    "original_set" : ip4_set ,
+    "transfer_set  : ip4_set
+  } ,
+
+  ? "ip6nets" {
+    "original_set" : ip6_set ,
+    "transfer_set" : ip6_set
+  } ,
+
+  "source_organization"    organization ,
+  "recipient_organization" organization ,
+
+  "source_rir"    rir ,
+  "recipient_rir" rir ,
+
+  ; The date the processing of the transfer begins.
+  ; This may vary by RIR according to practices, but
+  ; for receiving resources it should be no later than the date 
+  ; the resource is publicly visible (e.g. in Whois, DNS, RPKI, etc...)
+  ? "transfer_initiation_date" : date-time ,
+
+  
+  ? (
+
+      ; This is the date the transfer is seen as being completed.
+      ; This may vary by registry according to practices,
+      ; but for source resources it should be no later than the date
+      ; the resource is no longer publicly visible.
+      "completion_date" : date-time |
+
+      ; Denotes a transfer is in progress.
+      ; Varies depending upon RIR practices.
+      (
+        "in_progress"                 : true ,
+        ? "estimated_completion_date" : date-time
+      ) |
+
+      ; Denotes a transfer failed.
+      ; Varies depending upon RIR practices.
+      (
+        "incomplete"                  : true ,
+        ? "incompletion_date"         : date-time
+      )
+  ) ,
+
+  ; An optional textual description of the transfer.
+  ? "description" : string ,
+
+  ; An optional declaration of the type of transfer, such as which
+  ; policy the transfer occured under.
+  ? "type" {
+
+    ; A short signifier of the type. For example, a policy number.
+    "signifier"     : string ,
+
+    ; An optional textual description of the transfer type
+    ? "description" : string 
+  }
+
+}
+
+
+
+;
+; An array of objects, each representing a continguous block
+; of autonomous system numbers.
+
+asn_set [
+
+  * {
+      ; The first autonomous system number in the contiguous block.
+      "start"               : 0..4294967296 ,
+
+      ; The last autonomous system number in the contiguous block.
+      "last"                : 0..4294967296 
+  }
+
+]
+
+
+
+;
+; An array of objects, each representing a contiguous block of IPv4
+; addresses.
+;
+
+ip4_set [
+
+  * {
+      ; Start IP address
+      "start_address"       : ip4 ,
+
+      ; End IP address
+      "end_address"         : ip4 ,
+
+      ; An optional array for IPv4 CIDR blocks which make up this
+      ; IP block
+      ? "cidrs" [
+        1* {
+             "prefix" : ip4 ,
+             "length" : 0..32
+        }
+      ]
+  }
+
+]
+
+
+
+;
+; An array of objects, each representing a contiguous block of IPv6
+; addresses.
+;
+
+ipv6_set [
+
+  * {
+      ; Start IP address
+      "start_address"       : ip6 ,
+
+      ; End IP address
+      "end_address"         : ip6 ,
+
+      ; An optional array for IPv6 CIDR blocks which make up this
+      ; IP block
+      ? "cidrs" [
+        1* {
+             "prefix" : ip6 ,
+             "length" : 0..128
+        }
+      ]
+  }
+
+]
+
+
+
+;
+; The list of the RIRs.
+;
+rir ( :"AFRINIC" | :"APNIC" | :"ARIN" | :"LACNIC" | :"RIPE NCC" )
+
+;
+; Represents an organization that is either the source of the transfer
+; or the recipient of the transfer
+;
+organization {
+
+  ; An identifier of the organization that is unique within the scope of the registry.
+  ; If an organization appears in multiple transfer logs, this identifer will be the same.
+  ? "registration_id"       : string ,
+ 
+  ; An identifier of the organization that is unique within the scope of a single transfer log.
+  ; This identifier may be the same as the "registration_id" depending on implementation.
+  "log_id"                  : string ,
+
+  ; Name of the organization
+  ? "name"                    : string ,
+
+  ; 2 letter country code, same as 2.3
+  "country_code"            : /[A-Z]{2}/
+}
+
