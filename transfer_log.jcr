@@ -89,35 +89,12 @@ transfer {
   "source_rir"    rir ,
   "recipient_rir" rir ,
 
-  ; The date the processing of the transfer begins.
-  ; This may vary by RIR according to practices, but
-  ; for receiving resources it should be no later than the date 
-  ; the resource is publicly visible (e.g. in Whois, DNS, RPKI, etc...)
-  ? "transfer_initiation_date" : date-time ,
-
-  
-  ? (
-
-      ; This is the date the transfer is seen as being completed.
-      ; This may vary by registry according to practices,
-      ; but for source resources it should be no later than the date
-      ; the resource is no longer publicly visible.
-      "completion_date" : date-time |
-
-      ; Denotes a transfer is in progress.
-      ; Varies depending upon RIR practices.
-      (
-        "in_progress"                 : true ,
-        ? "estimated_completion_date" : date-time
-      ) |
-
-      ; Denotes a transfer failed.
-      ; Varies depending upon RIR practices.
-      (
-        "incomplete"                  : true ,
-        ? "incompletion_date"         : date-time
-      )
-  ) ,
+  ; This is the date the transfer is seen as being completed.
+  ; This may vary by registry according to practices,
+  ; but should be generally understood to be the date upon
+  ; which the resources can be observed to have transfered
+  ; in Whois/RDAP, DNS and/or RPKI.
+  "completion_date" : date-time ,
 
   ; An optional textual description of the transfer.
   ? "description" : string ,
