@@ -3,22 +3,21 @@
 ;
 ; This is a ruleset for describing the transfers of Autonomous System
 ; Numbers and IP address networks transacted through Regional Internet
-; Registries (RIRs). The types of transfes covered include both intra-RIR
-; and inter-RIR transfers.
+; Registries (RIRs).
 ;
 ; This ruleset conforms to JSON Content Rules, defined here:
-; https://tools.ietf.org/html/draft-newton-json-content-rules-05
+; https://tools.ietf.org/html/draft-newton-json-content-rules-07
 ;
 
-# jcr-version 0.5
-# ruleset-id rirstats
+# jcr-version 0.7
+# ruleset-id rir_xfer_stats
 
 ;
 ; The root of this JSON is a JSON object containing
 ; version information followed by the transfer information.
 ;
 
-{ version , transfers }
+{ $version , $transfers }
 
 
 
@@ -27,7 +26,7 @@
 ; This object is a member of the top level object.
 ;
 
-version "version" {
+$version = "version" : {
 
   ; Denotes version 3.0
   ; We start at version 3.0 because there do exist two independent
@@ -35,25 +34,25 @@ version "version" {
   "stats_version"    : "3.0" ,     
 
   ; Who produced the file: either one of the RIRs or the NRO
-  "producer"         : ( rir | :"NRO" ) ,
+  "producer"         : ( $rir | "NRO" ) ,
 
   ; UTC offset of the producer.
   "UTC_offset"       : -12..12 ,
 
   ; Date and time the file was produced
-  "production_date"  : date-time ,
+  "production_date"  : datetime ,
 
   ; The period from which the records of this file are covered.
-  "records_interval" { 
-    "start_date" : date-time , 
-    "end_date"   : date-time 
+  "records_interval" : { 
+    "start_date" : datetime , 
+    "end_date"   : datetime 
   } ,
 
-  ; An array of strings, where each string contains a semantic distinct
+  ; An optional array of strings, where each string contains a semantic distinct
   ; prose (in some contexts, these might be called paragraphs).
   ; This is where a producer would put copyright notices, terms of
   ; service for the data, and production notes.
-  ? "remarks"        [ * :string ]
+  "remarks"      : [ string * ] ?
 
 }
 
@@ -64,51 +63,33 @@ version "version" {
 ; Transfers is an array of tranfer objects.
 ;
 
-transfers "transfers" [ * transfer ]
+$transfers = "transfers" : [ $transfer * ]
 
-transfer {
+$transfer = {
 
-  ? "asns" {
-    "original_set" asn_set ,
-    "transfer_set" asn_set
-  } ,
+  "asns" : {
+    "original_set" : $asn_set ,
+    "transfer_set" : $asn_set
+  } ?,
 
-  ? "ip4nets" {
-    "original_set" ip4_set ,
-    "transfer_set" ip4_set
-  } ,
+  "ip4nets" : {
+    "original_set" : $ip4_set ,
+    "transfer_set" : $ip4_set
+  } ?,
 
-  ? "ip6nets" {
-    "original_set" ip6_set ,
-    "transfer_set" ip6_set
-  } ,
+  "ip6nets" : {
+    "original_set" : $ip6_set ,
+    "transfer_set" : $ip6_set
+  } ?,
 
-  "source_organization"    organization ,
-  "recipient_organization" organization ,
+  "source_organization"    : $organization ,
+  "recipient_organization" : $organization ,
 
-  "source_rir"    rir ,
-  "recipient_rir" rir ,
+  "source_rir"    : $rir ,
+  "recipient_rir" : $rir ,
 
-  ; This is the date the transfer is seen as being completed.
-  ; This may vary by registry according to practices,
-  ; but should be generally understood to be the date upon
-  ; which the resources can be observed to have transfered
-  ; in Whois/RDAP, DNS and/or RPKI.
-  "completion_date" : date-time ,
-
-  ; An optional textual description of the transfer.
-  ? "description" : string ,
-
-  ; An optional declaration of the type of transfer, such as which
-  ; policy the transfer occured under.
-  ? "type" {
-
-    ; A short signifier of the type. For example, a policy number.
-    "signifier"     : string ,
-
-    ; An optional textual description of the transfer type
-    ? "description" : string 
-  }
+  ; The type of transfer.
+  "type" : ( "MERGER_ACQUISITION" | "MARKET_TRANSFER" )
 
 }
 
@@ -118,15 +99,15 @@ transfer {
 ; An array of objects, each representing a continguous block
 ; of autonomous system numbers.
 
-asn_set [
+$asn_set = [
 
-  * {
-      ; The first autonomous system number in the contiguous block.
-      "start"               : 0..4294967296 ,
+  {
+    ; The first autonomous system number in the contiguous block.
+    "start"               : int32 ,
 
-      ; The last autonomous system number in the contiguous block.
-      "end"                 : 0..4294967296 
-  }
+    ; The last autonomous system number in the contiguous block.
+    "end"                 : int32 
+  } *
 
 ]
 
@@ -137,24 +118,24 @@ asn_set [
 ; addresses.
 ;
 
-ip4_set [
+$ip4_set = [
 
-  * {
-      ; Start IP address
-      "start_address"       : ip4 ,
+  {
+    ; Start IP address
+    "start_address"       : ipv4 ,
 
-      ; End IP address
-      "end_address"         : ip4 ,
+    ; End IP address
+    "end_address"         : ipv4 ,
 
-      ; An optional array for IPv4 CIDR blocks which make up this
-      ; IP block
-      ? "cidrs" [
-        1* {
-             "prefix" : ip4 ,
-             "length" : 0..32
-        }
-      ]
-  }
+    ; An optional array for IPv4 CIDR blocks which make up this
+    ; IP block
+    "cidrs" : [
+      {
+        "prefix" : ipv4 ,
+        "length" : 0..32
+      } +
+    ] ?
+  } *
 
 ]
 
@@ -165,23 +146,23 @@ ip4_set [
 ; addresses.
 ;
 
-ip6_set [
+$ip6_set = [
 
-  * {
-      ; Start IP address
-      "start_address"       : ip6 ,
+  {
+    ; Start IP address
+    "start_address"       : ipv6 ,
 
-      ; End IP address
-      "end_address"         : ip6 ,
+    ; End IP address
+    "end_address"         : ipv6 ,
 
-      ; An optional array for IPv6 CIDR blocks which make up this
-      ; IP block
-      ? "cidrs" [
-        1* {
-             "prefix" : ip6 ,
-             "length" : 0..128
-        }
-      ]
+    ; An optional array for IPv6 CIDR blocks which make up this
+    ; IP block
+    "cidrs" : [
+      {
+        "prefix" : ipv6 ,
+        "length" : 0..128
+      } +
+    ] ?
   }
 
 ]
@@ -191,24 +172,16 @@ ip6_set [
 ;
 ; The list of the RIRs.
 ;
-rir ( :"AFRINIC" | :"APNIC" | :"ARIN" | :"LACNIC" | :"RIPE NCC" )
+$rir = ( "AFRINIC" | "APNIC" | "ARIN" | "LACNIC" | "RIPE NCC" )
 
 ;
 ; Represents an organization that is either the source of the transfer
 ; or the recipient of the transfer
 ;
-organization {
-
-  ; An identifier of the organization that is unique within the scope of the registry.
-  ; If an organization appears in multiple transfer logs, this identifer will be the same.
-  ? "registration_id"       : string ,
- 
-  ; An identifier of the organization that is unique within the scope of a single transfer log.
-  ; This identifier may be the same as the "registration_id" depending on implementation.
-  "log_id"                  : string ,
+$organization = {
 
   ; Name of the organization
-  ? "name"                    : string ,
+  "name"                    : string ,
 
   ; 2 letter country code, same as 2.3
   "country_code"            : /[A-Z]{2}/

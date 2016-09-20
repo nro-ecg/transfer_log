@@ -33,30 +33,17 @@
       },
       "source_organization" :
       {
-        "registration_id" : "SOS190",
-        "log_id"          : "1FG23DAE",
         "name"            : "Wiley's Internet Widgets, Inc.",
         "country_code"    : "US"
       },
       "recipient_organization" :
       {
-        "registration_id" : "FOOB112",
-        "log_id"          : "EAD3GF1",
         "name"            : "NATs Rnt Us, LLC",
         "country_code"    : "CN"
       },
       "source_rir" : "ARIN",
       "recipient_rir" : "APNIC" ,
-      "completion_date" : "2016-02-22T00:08:30-05:00" ,
-      "description" :
-      [
-        "This was not a transfer of live resources"
-      ],
-      "type" :
-      {
-        "signifier" : "8.4",
-        "description" : "NRPM 8.4 Inter-RIR Transfer"
-      }
+      "type" : "MARKET_TRANSFER"
     }
   ]
 }
