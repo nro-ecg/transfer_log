@@ -10,7 +10,7 @@ The formal JSON specification can be found [here](https://github.com/nro-ecg/tra
 
 ## File Naming Conventions and Processes
 
-Each RIR will publish the transfer log on their FTP server (it should be noted, that each RIR makes the contents of their FTP server available via HTTP as well). Each RIR will create a `/pub/stats/transfers` directory.
+Each RIR will publish the transfer log on their FTP server (it should be noted, that each RIR makes the contents of their FTP server available via HTTP as well). Each RIR will create a `/pub/stats/RIR/transfers` directory, where "RIR" is the name of the RIR (e.g. APNIC, LACNIC, etc).
 
 Within that directory there will be a file called `transfers_latest.json`. This file will be the cummulative transfer log and is expected grow over time.
 
