@@ -23,14 +23,15 @@ The following is an example of the directory.
 ```
 pub/
   stats/
-    transfers/
-      transfers_latest.json
-      2017/
-        transfers_20170322T060000Z.json
-        transfers_20170321T060000Z.json
-        ...
-      2016/
-        transfers_20160322T060000Z.json
-        transfers_20160321T060000Z.json
-        ...
+    /<rir>
+      transfers/
+        transfers_latest.json
+        2017/
+          transfers_20170322T060000Z.json
+          transfers_20170321T060000Z.json
+          ...
+        2016/
+          transfers_20160322T060000Z.json
+          transfers_20160321T060000Z.json
+          ...
 ```
