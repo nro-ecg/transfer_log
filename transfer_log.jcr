@@ -82,8 +82,8 @@ $transfer = {
     "transfer_set" : $ip6_set
   } ?,
 
-  "source_organization"    : $organization ,
-  "recipient_organization" : $organization ,
+  "source_organization"    : $organization ? ,
+  "recipient_organization" : $organization ? ,
 
   "source_rir"    : $rir ,
   "recipient_rir" : $rir ,
@@ -181,9 +181,9 @@ $rir = ( "AFRINIC" | "APNIC" | "ARIN" | "LACNIC" | "RIPE NCC" )
 $organization = {
 
   ; Name of the organization
-  "name"                    : string ,
+  "name"                    : string ? ,
 
   ; 2 letter country code, same as 2.3
-  "country_code"            : /[A-Z]{2}/
+  "country_code"            : /[A-Z]{2}/ ?
 }
 
